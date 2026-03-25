@@ -1,0 +1,125 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: students
+    // Fields: student_id, name, father_name, mobile, parent_mobile, address, class_name, join_date, shift, shift_start_time, shift_end_time, fee_amount, uid
+    //
+    // Collection: fees
+    // Fields: receipt_no, student_id, student_name, month, year, amount, payment_mode, payment_date, status, uid
+    //
+    // Collection: attendance
+    // Fields: student_id, student_name, date, entry_time, exit_time, total_hours, uid
+    //
+    // Collection: books
+    // Fields: book_id, title, author, quantity, available, uid
+    //
+    // Collection: archived_students
+    // Fields: student_id, name, father_name, mobile, parent_mobile, address, class_name, join_date, shift, shift_start_time, shift_end_time, fee_amount, months_studied, fees_paid_count, total_fees_paid, last_payment_date, archived_date, uid
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidStudent(data) {
+      return hasRequiredFields(['student_id', 'name', 'mobile', 'class_name', 'join_date', 'shift', 'fee_amount', 'uid']) &&
+             data.student_id is string && data.name is string && data.mobile is string &&
+             data.fee_amount is number && data.uid is string;
+    }
+
+    function isValidFee(data) {
+      return hasRequiredFields(['receipt_no', 'student_id', 'student_name', 'month', 'year', 'amount', 'payment_mode', 'payment_date', 'status', 'uid']) &&
+             data.receipt_no is string && data.student_id is string && data.amount is number && data.uid is string;
+    }
+
+    function isValidAttendance(data) {
+      return hasRequiredFields(['student_id', 'student_name', 'date', 'entry_time', 'exit_time', 'total_hours', 'uid']) &&
+             data.student_id is string && data.date is string && data.uid is string;
+    }
+
+    function isValidBook(data) {
+      return hasRequiredFields(['book_id', 'title', 'author', 'quantity', 'available', 'uid']) &&
+             data.book_id is string && data.title is string && data.quantity is number && data.uid is string;
+    }
+
+    function isValidArchivedStudent(data) {
+      return hasRequiredFields(['student_id', 'name', 'mobile', 'class_name', 'join_date', 'shift', 'fee_amount', 'months_studied', 'fees_paid_count', 'total_fees_paid', 'archived_date', 'uid']) &&
+             data.student_id is string && data.name is string && data.uid is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /students/{studentId} {
+      allow read: if isAuthenticated() && isDocOwner();
+      allow create: if isAuthenticated() && isValidStudent(request.resource.data) && uidUnchanged();
+      allow update: if isAuthenticated() && isDocOwner() && isValidStudent(request.resource.data) && uidNotModified();
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+
+    match /fees/{feeId} {
+      allow read: if isAuthenticated() && isDocOwner();
+      allow create: if isAuthenticated() && isValidFee(request.resource.data) && uidUnchanged();
+      allow update: if isAuthenticated() && isDocOwner() && isValidFee(request.resource.data) && uidNotModified();
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read: if isAuthenticated() && isDocOwner();
+      allow create: if isAuthenticated() && isValidAttendance(request.resource.data) && uidUnchanged();
+      allow update: if isAuthenticated() && isDocOwner() && isValidAttendance(request.resource.data) && uidNotModified();
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+
+    match /books/{bookId} {
+      allow read: if isAuthenticated() && isDocOwner();
+      allow create: if isAuthenticated() && isValidBook(request.resource.data) && uidUnchanged();
+      allow update: if isAuthenticated() && isDocOwner() && isValidBook(request.resource.data) && uidNotModified();
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+
+    match /archived_students/{archivedStudentId} {
+      allow read: if isAuthenticated() && isDocOwner();
+      allow create: if isAuthenticated() && isValidArchivedStudent(request.resource.data) && uidUnchanged();
+      allow update: if isAuthenticated() && isDocOwner() && isValidArchivedStudent(request.resource.data) && uidNotModified();
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+  }
+}

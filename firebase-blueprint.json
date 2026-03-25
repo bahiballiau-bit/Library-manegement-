@@ -1,0 +1,120 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "A student in the library management system",
+      "type": "object",
+      "properties": {
+        "student_id": { "type": "string" },
+        "name": { "type": "string" },
+        "father_name": { "type": "string" },
+        "mobile": { "type": "string" },
+        "parent_mobile": { "type": "string" },
+        "address": { "type": "string" },
+        "class_name": { "type": "string" },
+        "join_date": { "type": "string" },
+        "shift": { "type": "string" },
+        "shift_start_time": { "type": "string" },
+        "shift_end_time": { "type": "string" },
+        "fee_amount": { "type": "number" },
+        "uid": { "type": "string", "description": "The UID of the user who created the student" }
+      },
+      "required": ["student_id", "name", "mobile", "class_name", "join_date", "shift", "fee_amount", "uid"]
+    },
+    "FeeRecord": {
+      "title": "FeeRecord",
+      "description": "A record of a fee payment",
+      "type": "object",
+      "properties": {
+        "receipt_no": { "type": "string" },
+        "student_id": { "type": "string" },
+        "student_name": { "type": "string" },
+        "month": { "type": "string" },
+        "year": { "type": "string" },
+        "amount": { "type": "number" },
+        "payment_mode": { "type": "string" },
+        "payment_date": { "type": "string" },
+        "status": { "type": "string" },
+        "uid": { "type": "string", "description": "The UID of the user who created the record" }
+      },
+      "required": ["receipt_no", "student_id", "student_name", "month", "year", "amount", "payment_mode", "payment_date", "status", "uid"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "A record of a student's attendance",
+      "type": "object",
+      "properties": {
+        "student_id": { "type": "string" },
+        "student_name": { "type": "string" },
+        "date": { "type": "string" },
+        "entry_time": { "type": "string" },
+        "exit_time": { "type": "string" },
+        "total_hours": { "type": "string" },
+        "uid": { "type": "string", "description": "The UID of the user who created the record" }
+      },
+      "required": ["student_id", "student_name", "date", "entry_time", "exit_time", "total_hours", "uid"]
+    },
+    "Book": {
+      "title": "Book",
+      "description": "A book in the library",
+      "type": "object",
+      "properties": {
+        "book_id": { "type": "string" },
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "quantity": { "type": "number" },
+        "available": { "type": "number" },
+        "uid": { "type": "string", "description": "The UID of the user who created the record" }
+      },
+      "required": ["book_id", "title", "author", "quantity", "available", "uid"]
+    },
+    "ArchivedStudent": {
+      "title": "ArchivedStudent",
+      "description": "A student who has been moved to the recycle bin",
+      "type": "object",
+      "properties": {
+        "student_id": { "type": "string" },
+        "name": { "type": "string" },
+        "father_name": { "type": "string" },
+        "mobile": { "type": "string" },
+        "parent_mobile": { "type": "string" },
+        "address": { "type": "string" },
+        "class_name": { "type": "string" },
+        "join_date": { "type": "string" },
+        "shift": { "type": "string" },
+        "shift_start_time": { "type": "string" },
+        "shift_end_time": { "type": "string" },
+        "fee_amount": { "type": "number" },
+        "months_studied": { "type": "number" },
+        "fees_paid_count": { "type": "number" },
+        "total_fees_paid": { "type": "number" },
+        "last_payment_date": { "type": "string" },
+        "archived_date": { "type": "string" },
+        "uid": { "type": "string", "description": "The UID of the user who created the record" }
+      },
+      "required": ["student_id", "name", "mobile", "class_name", "join_date", "shift", "fee_amount", "months_studied", "fees_paid_count", "total_fees_paid", "archived_date", "uid"]
+    }
+  },
+  "firestore": {
+    "/students": {
+      "schema": "Student",
+      "description": "Collection of active students"
+    },
+    "/fees": {
+      "schema": "FeeRecord",
+      "description": "Collection of fee payment records"
+    },
+    "/attendance": {
+      "schema": "AttendanceRecord",
+      "description": "Collection of attendance records"
+    },
+    "/books": {
+      "schema": "Book",
+      "description": "Collection of books"
+    },
+    "/archived_students": {
+      "schema": "ArchivedStudent",
+      "description": "Collection of archived students"
+    }
+  }
+}
